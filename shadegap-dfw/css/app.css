@@ -1,0 +1,78 @@
+:root {
+  --sg-hot: #c0392b;
+  --sg-ink: #1f2a33;
+  --sg-muted: #5b6770;
+  --sg-line: #dfe3e6;
+  --sg-bg: #f6f4f0;
+}
+
+html, body { height: 100%; margin: 0; }
+body { font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif; color: var(--sg-ink); background: var(--sg-bg); }
+
+#app {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  grid-template-rows: 64px 1fr 32vh;
+  grid-template-areas:
+    "header header"
+    "side   map"
+    "side   table";
+  height: 100vh;
+}
+
+/* Header */
+#header {
+  grid-area: header;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 18px;
+  background: linear-gradient(90deg, #2b1a14 0%, #5a2416 55%, #a8381f 100%);
+  color: #fff;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.logo { font-size: 28px; line-height: 1; color: #ffcf6e; }
+#header h1 { margin: 0; font-size: 19px; letter-spacing: .3px; }
+#header p { margin: 2px 0 0; font-size: 12.5px; opacity: .85; }
+#header-stats { display: flex; gap: 18px; font-size: 12px; }
+#header-stats .stat b { display: block; font-size: 18px; font-variant-numeric: tabular-nums; }
+
+/* Sidebar */
+#sidebar { grid-area: side; overflow-y: auto; background: #fff; border-right: 1px solid var(--sg-line); }
+#sidebar calcite-tabs { min-height: 100%; }
+calcite-block { --calcite-block-padding: 10px 14px; }
+arcgis-histogram-range-slider { display: block; min-height: 150px; margin-bottom: 6px; }
+arcgis-sketch { display: block; margin-bottom: 8px; }
+#crown-label { margin-top: 10px; }
+
+.summary { font-size: 13px; line-height: 1.45; margin: 6px 0 10px; }
+.summary .big { font-size: 22px; font-weight: 700; color: var(--sg-hot); font-variant-numeric: tabular-nums; }
+.summary .good { color: #1e7b45; font-weight: 700; }
+.hint { font-size: 12px; color: var(--sg-muted); margin: 8px 0 0; }
+
+#scenario-list table { width: 100%; border-collapse: collapse; font-size: 12px; }
+#scenario-list th { text-align: left; color: var(--sg-muted); font-weight: 600; border-bottom: 1px solid var(--sg-line); padding: 3px 2px; }
+#scenario-list td { padding: 4px 2px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+#scenario-list td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+#scenario-list tr { cursor: pointer; }
+#scenario-list tr:hover td { background: #fff4ec; }
+.pill { display: inline-block; padding: 1px 6px; border-radius: 9px; font-size: 11px; color: #fff; }
+.pill.Low { background: #d9a400; } .pill.Moderate { background: #f28e2b; }
+.pill.High { background: #e15759; } .pill.Very.high, .pill.Veryhigh { background: #8c1d18; }
+
+.about { padding: 6px 16px 20px; font-size: 13.5px; line-height: 1.5; }
+.about h2 { font-size: 16px; margin: 12px 0 6px; }
+.about h3 { font-size: 14px; margin: 14px 0 4px; }
+.about ul { padding-left: 18px; margin: 4px 0; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; background: var(--sg-bg); padding: 6px 8px; border-radius: 4px; }
+.small { font-size: 11.5px; color: var(--sg-muted); margin-top: 16px; }
+
+/* Map + table */
+#map-wrap { grid-area: map; position: relative; }
+arcgis-map { width: 100%; height: 100%; display: block; }
+#table-wrap { grid-area: table; border-top: 1px solid var(--sg-line); background: #fff; }
+arcgis-feature-table { display: block; height: 100%; }
+
+@media (max-width: 860px) {
+  #app { grid-template-columns: 1fr; grid-template-rows: 56px 46vh auto 38vh;
+         grid-template-areas: "header" "map" "side" "table"; height: auto; }
+  #header-stats { display: none; }
+}
