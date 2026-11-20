@@ -143,6 +143,16 @@ const view = mapEl.view;
 
 await stopsLayer.load();
 const stopsLayerView = await view.whenLayerView(stopsLayer);
+
+// Open on the DART service area and make it the Home view
+try {
+  const { extent } = await stopsLayer.queryExtent();
+  if (extent) {
+    await view.goTo(extent.expand(1.05), { animate: false });
+    const homeEl = document.querySelector("arcgis-home");
+    if (homeEl) homeEl.viewpoint = view.viewpoint.clone();
+  }
+} catch (err) { console.warn("Could not zoom to stops", err); }
 if (!geodeticDistanceOperator.isLoaded()) await geodeticDistanceOperator.load();
 
 // Reference distributions used to recompute percentiles in the browser
@@ -158,18 +168,24 @@ function pctRank(sorted, v) {
 const heiFrom = (pctLst, pctTree, svi) => 100 * (W.heat * pctLst + W.shade * (1 - pctTree) + W.svi * svi);
 
 // Header statistics
+/** Read a statistics result regardless of the case the server uses for field names */
+const statVal = (attrs, name) => {
+  const key = Object.keys(attrs ?? {}).find((k) => k.toLowerCase() === name.toLowerCase());
+  return key ? attrs[key] : null;
+};
 (async () => {
-  const q = stopsLayer.createQuery();
-  q.outStatistics = [
-    { statisticType: "count", onStatisticField: "hei", outStatisticFieldName: "n" },
-    { statisticType: "avg", onStatisticField: "lst_c", outStatisticFieldName: "lst" },
-  ];
-  const s = (await stopsLayer.queryFeatures(q)).features[0].attributes;
-  const vh = await stopsLayer.queryFeatureCount({ where: "priority = 'Very high'" });
-  $("#header-stats").innerHTML =
-    `<div class="stat"><b>${s.n.toLocaleString()}</b>bus stops</div>` +
-    `<div class="stat"><b>${vh.toLocaleString()}</b>very high priority</div>` +
-    `<div class="stat"><b>${fmt(s.lst)} °C</b>mean surface temp</div>`;
+  try {
+    const n = await stopsLayer.queryFeatureCount({ where: "1=1" });
+    const vh = await stopsLayer.queryFeatureCount({ where: "priority = 'Very high'" });
+    const q = stopsLayer.createQuery();
+    q.where = "1=1";
+    q.outStatistics = [{ statisticType: "avg", onStatisticField: "lst_c", outStatisticFieldName: "lst_avg" }];
+    const lst = statVal((await stopsLayer.queryFeatures(q)).features[0]?.attributes, "lst_avg");
+    $("#header-stats").innerHTML =
+      `<div class="stat"><b>${n.toLocaleString()}</b>bus stops</div>` +
+      `<div class="stat"><b>${vh.toLocaleString()}</b>very high priority</div>` +
+      `<div class="stat"><b>${fmt(lst)} °C</b>mean surface temp</div>`;
+  } catch (err) { console.warn("Header statistics failed", err); }
 })();
 
 // ---------------------------------------------------------------------------
@@ -426,7 +442,8 @@ async function summarizeArea(geometry) {
     { statisticType: "avg", onStatisticField: "lst_c", outStatisticFieldName: "lst_avg" },
     { statisticType: "avg", onStatisticField: "tree_idx", outStatisticFieldName: "tree_avg" },
   ];
-  const s = (await stopsLayer.queryFeatures(q)).features[0]?.attributes ?? {};
+  const raw = (await stopsLayer.queryFeatures(q)).features[0]?.attributes ?? {};
+  const s = Object.fromEntries(["n", "hei_avg", "hei_max", "lst_avg", "tree_avg"].map((k) => [k, statVal(raw, k)]));
   const vh = await stopsLayer.queryFeatureCount({ geometry, spatialRelationship: "intersects", where: "priority = 'Very high'" });
   tableEl.filterGeometry = geometry;
   $("#area-summary").innerHTML = s.n
