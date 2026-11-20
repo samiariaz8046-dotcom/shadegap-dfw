@@ -1,5 +1,5 @@
 /* ShadeGap DFW 2.0 — Bus Stop Heat What-If Planner
- * GISC 6363 Final Project · Samia Riaz · ArcGIS Maps SDK for JavaScript 5.1
+ * GISC 6363 Final Project · Mobeen Akhtar · ArcGIS Maps SDK for JavaScript 5.1
  *
  * New components (not covered in the course labs):
  *   1. arcgis-sketch                 – what-if planner (trees, shelters, area summary)
@@ -152,7 +152,7 @@ const stopsLayerView = await view.whenLayerView(stopsLayer);
 try {
   const { extent } = await stopsLayer.queryExtent();
   if (extent) {
-    await view.goTo(extent.expand(1.05), { animate: false });
+    await view.goTo(extent.expand(1.02), { animate: false });
     const homeEl = document.querySelector("arcgis-home");
     if (homeEl) homeEl.viewpoint = view.viewpoint.clone();
   }
@@ -219,19 +219,19 @@ searchEl.sources = [
 // ---------------------------------------------------------------------------
 const tableEl = $("#table");
 tableEl.layer = stopsLayer;
-tableEl.tableTitle = "Bus stops ranked by Heat Exposure Index (click a row to zoom)";
+tableEl.tableTitle = "Stops ranked by heat exposure · click a row to zoom";
 const col = (fieldName, label, extra = {}) => new FieldColumnTemplate({ fieldName, label, ...extra });
 tableEl.tableTemplate = new TableTemplate({
   columnTemplates: [
     col("hei_rank", "Rank", { direction: "asc", initialSortPriority: 0, width: 80 }),
     col("stop_name", "Stop", { flexGrow: 2 }),
-    col("routes", "Routes"),
+    col("routes", "Routes", { visible: false }),
     col("hei", "HEI", { width: 80 }),
     col("priority", "Priority"),
-    col("lst_c", "Surface temp (°C)"),
+    col("lst_c", "LST °C"),
     col("tree_idx", "Tree index"),
-    col("svi_rpl", "SVI"),
-    col("trips_in_feed", "Trips"),
+    col("svi_rpl", "SVI", { visible: false }),
+    col("trips_in_feed", "Trips", { visible: false }),
   ],
 });
 // Click a row: zoom to that stop and open its pop-up
@@ -277,7 +277,44 @@ async function applyFilter() {
 }
 let filterTimer;
 reactiveUtils.watch(() => sliderEl.values, () => { clearTimeout(filterTimer); filterTimer = setTimeout(applyFilter, 150); });
-$("#reset-filter").addEventListener("click", () => { sliderEl.values = [0, 100]; applyFilter(); });
+$("#reset-filter").addEventListener("click", () => {
+  sliderEl.values = [0, 100];
+  activePrio = null;
+  document.querySelectorAll(".prio-row.active").forEach((r) => r.classList.remove("active"));
+  applyFilter();
+});
+
+// Stops-by-priority breakdown (click a class to filter with the same slider)
+let activePrio = null;
+async function buildPriorityList() {
+  const q = stopsLayer.createQuery();
+  q.where = "1=1";
+  q.groupByFieldsForStatistics = ["priority"];
+  q.outStatistics = [
+    { statisticType: "count", onStatisticField: "hei", outStatisticFieldName: "n" },
+    { statisticType: "avg", onStatisticField: "lst_c", outStatisticFieldName: "lst_avg" },
+  ];
+  const { features } = await stopsLayer.queryFeatures(q);
+  const byName = Object.fromEntries(features.map((f) => [statVal(f.attributes, "priority"), f.attributes]));
+  const total = features.reduce((t, f) => t + (statVal(f.attributes, "n") || 0), 0);
+  const maxN = Math.max(...features.map((f) => statVal(f.attributes, "n") || 0));
+  $("#prio-list").innerHTML = [...PRIORITY].reverse().map((p) => {
+    const a = byName[p.name] ?? {};
+    const n = statVal(a, "n") || 0;
+    return `<div class="prio-row" data-p="${p.name}" title="Mean surface temp ${fmt(statVal(a, "lst_avg"))} °C">
+      <span>${p.name}</span>
+      <span class="prio-bar" style="width:${(100 * n / maxN).toFixed(1)}%;background:${p.color}"></span>
+      <span class="prio-num"><b>${n.toLocaleString()}</b> · ${(100 * n / total).toFixed(0)}%</span></div>`;
+  }).join("");
+  $("#prio-list").querySelectorAll(".prio-row").forEach((row) => row.addEventListener("click", () => {
+    const p = PRIORITY.find((x) => x.name === row.dataset.p);
+    activePrio = activePrio === p.name ? null : p.name;
+    $("#prio-list").querySelectorAll(".prio-row").forEach((r) => r.classList.toggle("active", r.dataset.p === activePrio));
+    sliderEl.values = activePrio ? [Math.max(p.min, 0) + (p.min > 0 ? 0.05 : 0), Math.min(p.max, 100)] : [0, 100];
+    applyFilter();
+  }));
+}
+buildPriorityList().catch((err) => console.warn("Priority breakdown failed", err));
 applyFilter();
 
 // ---------------------------------------------------------------------------
