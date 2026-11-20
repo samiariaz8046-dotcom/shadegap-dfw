@@ -325,6 +325,14 @@ sketchEl.addEventListener("arcgisCreate", (e) => {
   const { state, graphic } = e.detail;
   if (state !== "complete" || !graphic) return;
   if (graphic.geometry.type === "point") {
+    // Placement needs street-level precision: the waiting area is only 30 m wide
+    if (view.scale > 6000) {
+      scenarioInput.remove(graphic);
+      view.goTo({ target: graphic.geometry, scale: 2500 }, { duration: 800 });
+      $("#scenario-summary").innerHTML =
+        `<b>Zoomed in to street level.</b> Choose the point tool again and click within ~20 m of a stop.`;
+      return;
+    }
     graphic.attributes = { kind: placeKind, crownR: placeKind === "tree" ? crownR : null };
     graphic.symbol = SYMBOLS[placeKind];
     recomputeScenario();
