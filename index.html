@@ -68,10 +68,11 @@
               </calcite-label>
             </calcite-block>
 
-            <calcite-block open heading="2 · Draw on the map" description="Point: place a tree or shelter. Polygon or rectangle: summarize the stops inside an area.">
+            <calcite-block open heading="2 · Draw on the map" description="Zoom in to street level, then use the point tool to place a tree or shelter next to a stop. Use the polygon or rectangle tool to summarize an area.">
               <arcgis-sketch id="sketch" reference-element="main-map" creation-mode="single"
                 hide-create-tools-multipoint hide-create-tools-polyline hide-create-tools-circle
-                hide-duplicate-button hide-settings-menu toolbar-kind="docked"></arcgis-sketch>
+                hide-duplicate-button hide-settings-menu hide-selection-tools-lasso-selection
+                hide-selection-tools-rectangle-selection hide-undo-redo-menu toolbar-kind="docked"></arcgis-sketch>
               <calcite-button id="clear-scenario" appearance="outline" kind="danger" width="full" icon-start="trash" scale="s">Clear scenario</calcite-button>
             </calcite-block>
 
