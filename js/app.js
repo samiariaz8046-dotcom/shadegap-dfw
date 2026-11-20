@@ -73,7 +73,8 @@ const lstLayer = new ImageryTileLayer({
   renderer: {
     type: "raster-stretch",
     stretchType: "min-max",
-    statistics: [{ min: 380, max: 540 }], // 38–54 °C (stored ×10)
+    customStatistics: [{ min: 380, max: 540, avg: 460, stddev: 30 }], // 38–54 °C (stored ×10)
+    dynamicRangeAdjustment: false,
     colorRamp: {
       type: "multipart",
       colorRamps: [
@@ -92,7 +93,8 @@ const treesLayer = new ImageryTileLayer({
   renderer: {
     type: "raster-stretch",
     stretchType: "min-max",
-    statistics: [{ min: 0, max: 60 }],
+    customStatistics: [{ min: 0, max: 60, avg: 15, stddev: 15 }],
+    dynamicRangeAdjustment: false,
     colorRamp: { type: "algorithmic", fromColor: [247, 252, 245], toColor: [0, 68, 27] },
   },
 });
@@ -101,6 +103,8 @@ const stopsLayer = new FeatureLayer({
   url: CONFIG.stopsUrl,
   title: "DART bus stops · Heat Exposure Index",
   outFields: ["*"],
+  minScale: 0, // the hosted layer defaults to 1:247,863, which hides stops at city scale
+  maxScale: 0,
   renderer: {
     type: "class-breaks",
     field: "hei",
@@ -173,19 +177,23 @@ const statVal = (attrs, name) => {
   const key = Object.keys(attrs ?? {}).find((k) => k.toLowerCase() === name.toLowerCase());
   return key ? attrs[key] : null;
 };
-(async () => {
-  try {
-    const n = await stopsLayer.queryFeatureCount({ where: "1=1" });
-    const vh = await stopsLayer.queryFeatureCount({ where: "priority = 'Very high'" });
-    const q = stopsLayer.createQuery();
-    q.where = "1=1";
-    q.outStatistics = [{ statisticType: "avg", onStatisticField: "lst_c", outStatisticFieldName: "lst_avg" }];
-    const lst = statVal((await stopsLayer.queryFeatures(q)).features[0]?.attributes, "lst_avg");
-    $("#header-stats").innerHTML =
-      `<div class="stat"><b>${n.toLocaleString()}</b>bus stops</div>` +
-      `<div class="stat"><b>${vh.toLocaleString()}</b>very high priority</div>` +
-      `<div class="stat"><b>${fmt(lst)} °C</b>mean surface temp</div>`;
-  } catch (err) { console.warn("Header statistics failed", err); }
+$("#header-stats").innerHTML =
+  `<div class="stat"><b id="st-n">–</b>bus stops</div>` +
+  `<div class="stat"><b id="st-vh">–</b>very high priority</div>` +
+  `<div class="stat"><b id="st-lst">–</b>mean surface temp</div>`;
+stopsLayer.queryFeatureCount({ where: "1=1" })
+  .then((n) => { $("#st-n").textContent = n.toLocaleString(); })
+  .catch((err) => console.warn("Header: stop count failed", err));
+stopsLayer.queryFeatureCount({ where: "priority = 'Very high'" })
+  .then((n) => { $("#st-vh").textContent = n.toLocaleString(); })
+  .catch((err) => console.warn("Header: very-high count failed", err));
+(() => {
+  const q = stopsLayer.createQuery();
+  q.where = "1=1";
+  q.outStatistics = [{ statisticType: "avg", onStatisticField: "lst_c", outStatisticFieldName: "lst_avg" }];
+  stopsLayer.queryFeatures(q)
+    .then((r) => { $("#st-lst").textContent = `${fmt(statVal(r.features[0]?.attributes, "lst_avg"))} °C`; })
+    .catch((err) => console.warn("Header: mean LST failed", err));
 })();
 
 // ---------------------------------------------------------------------------
