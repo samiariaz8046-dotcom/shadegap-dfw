@@ -118,6 +118,11 @@ const stopsLayer = new FeatureLayer({
   },
   popupTemplate: {
     title: "{stop_name}",
+    // template-level formats also apply to {field} placeholders in the text element
+    fieldInfos: [
+      { fieldName: "hei", format: { places: 1, digitSeparator: false } },
+      { fieldName: "hei_rank", format: { places: 0, digitSeparator: true } },
+    ],
     content: [
       {
         type: "text",
