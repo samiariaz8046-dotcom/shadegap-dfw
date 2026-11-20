@@ -1,5 +1,5 @@
 /* ShadeGap DFW 2.0 — Bus Stop Heat What-If Planner
- * GISC 6363 Final Project · Mobeen Akhtar · ArcGIS Maps SDK for JavaScript 5.1
+ * GISC 6363 Final Project · Samia Riaz · ArcGIS Maps SDK for JavaScript 5.1
  *
  * New components (not covered in the course labs):
  *   1. arcgis-sketch                 – what-if planner (trees, shelters, area summary)
