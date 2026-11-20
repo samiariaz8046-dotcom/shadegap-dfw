@@ -41,7 +41,11 @@
               <calcite-button id="reset-filter" appearance="outline" width="full" icon-start="reset" scale="s">Show all stops</calcite-button>
             </calcite-block>
 
-            <calcite-block open heading="Raster layers (June–August 2026)" description="Compare surface temperature with tree cover.">
+            <calcite-block open heading="Stops by priority" description="Click a class to show only those stops. Click it again to show all.">
+              <div id="prio-list"></div>
+            </calcite-block>
+
+            <calcite-block open heading="Raster layers (June–August 2026)" description="Compare surface temperature with tree cover. The rasters cover the DART service area.">
               <calcite-segmented-control id="raster-mode" width="full" scale="s">
                 <calcite-segmented-control-item value="none" checked>None</calcite-segmented-control-item>
                 <calcite-segmented-control-item value="lst">Surface temp</calcite-segmented-control-item>
@@ -112,7 +116,7 @@
                 <li>Landsat passes over at about 10:30–11:00 a.m., so it misses the afternoon peak.</li>
                 <li>GTFS data doesn't record existing shelters.</li>
               </ul>
-              <p class="small">Samia Riaz · GISC 6363 Internet Mapping, UT Dallas · Fall 2026. Built with ArcGIS Maps SDK for JavaScript 5.1. See the README for sources and the samples this app adapts.</p>
+              <p class="small">Mobeen Akhtar · GISC 6363 Internet Mapping, UT Dallas · Fall 2026. Built with ArcGIS Maps SDK for JavaScript 5.1. See the README for sources and the samples this app adapts.</p>
             </div>
           </calcite-tab>
         </calcite-tabs>
