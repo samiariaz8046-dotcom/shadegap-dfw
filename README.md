@@ -1,6 +1,6 @@
 # ShadeGap DFW 2.0: Bus Stop Heat What-If Planner
 
-GISC 6363 Internet Mapping and Information Processing (UT Dallas, Fall 2026). Final project by Mobeen Akhtar.
+GISC 6363 Internet Mapping and Information Processing (UT Dallas, Fall 2026). Final project by Samia Riaz.
 
 ShadeGap DFW 2.0 ranks heat exposure at **6,837 DART bus stops** for summer 2026. It also lets planners test where a new shade tree or bus shelter would lower exposure the most. The app is a pure HTML5 application built with the **ArcGIS Maps SDK for JavaScript 5.1**. It extends my midterm Experience Builder app, *ShadeGap DFW*.
 
