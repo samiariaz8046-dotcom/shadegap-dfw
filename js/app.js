@@ -228,13 +228,13 @@ tableEl.tableTitle = "Stops ranked by heat exposure · click a row to zoom";
 const col = (fieldName, label, extra = {}) => new FieldColumnTemplate({ fieldName, label, ...extra });
 tableEl.tableTemplate = new TableTemplate({
   columnTemplates: [
-    col("hei_rank", "Rank", { direction: "asc", initialSortPriority: 0, width: 80 }),
-    col("stop_name", "Stop", { flexGrow: 2 }),
+    col("hei_rank", "Rank", { direction: "asc", initialSortPriority: 0, width: 66 }),
+    col("stop_name", "Stop", { flexGrow: 1 }),
     col("routes", "Routes", { visible: false }),
-    col("hei", "HEI", { width: 80 }),
-    col("priority", "Priority"),
-    col("lst_c", "LST °C"),
-    col("tree_idx", "Tree index"),
+    col("hei", "HEI", { width: 66 }),
+    col("priority", "Priority", { width: 96 }),
+    col("lst_c", "LST °C", { width: 76 }),
+    col("tree_idx", "Tree index", { visible: false }),
     col("svi_rpl", "SVI", { visible: false }),
     col("trips_in_feed", "Trips", { visible: false }),
   ],
