@@ -3,10 +3,11 @@
  *
  * New components (not covered in the course labs):
  *   1. arcgis-sketch                 – what-if planner (trees, shelters, area summary)
- *   2. arcgis-swipe                  – surface temperature vs tree cover, summer 2026
- *   3. arcgis-feature-table          – priority list linked to the map and filters
- *   4. arcgis-histogram-range-slider – filter stops on the HEI distribution
- *   5. arcgis-print                  – export the current planning view
+ *   2. arcgis-feature-table          – priority list linked to the map and filters
+ *   3. arcgis-histogram-range-slider – filter stops on the HEI distribution
+ *   4. arcgis-print                  – export the current planning view
+ * Also used: arcgis-swipe (surface temperature vs tree cover; a StoryMaps swipe was
+ * covered in the Chapter 5 tutorial, so it is not counted as new), plus lab components.
  */
 
 // ---------------------------------------------------------------------------
