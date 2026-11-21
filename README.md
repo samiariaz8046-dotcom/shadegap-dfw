@@ -20,12 +20,11 @@ The shade measure was checked against USFS Tree Canopy Cover 2023 at every stop 
 
 ## Components added in code (not covered in the course labs)
 1. **Sketch** (`arcgis-sketch`): the what-if planner. Place trees or shelters, and the HEI of nearby stops is recalculated in the browser. A polygon or rectangle summarizes the stops inside it.
-2. **Swipe** (`arcgis-swipe`): compares the 2026 surface temperature and tree cover rasters, loaded as Cloud-Optimized GeoTIFFs.
-3. **Feature Table** (`arcgis-feature-table`): ranked stop list, linked to the map, the histogram filter and the area tool.
-4. **Histogram Range Slider** (`arcgis-histogram-range-slider`): filters stops on the HEI distribution.
-5. **Print** (`arcgis-print`): exports the current planning view as PDF or PNG.
+2. **Feature Table** (`arcgis-feature-table`): ranked stop list, linked to the map, the histogram filter and the area tool.
+3. **Histogram Range Slider** (`arcgis-histogram-range-slider`): filters stops on the HEI distribution.
+4. **Print** (`arcgis-print`): exports the current planning view as PDF or PNG.
 
-The app also uses Zoom, Home, Search, Legend, Expand and Scale Bar, which were covered in the labs.
+The app also uses **Swipe** (`arcgis-swipe`) to compare the 2026 surface temperature and tree cover rasters, loaded as Cloud-Optimized GeoTIFFs. It isn't counted as new because a StoryMaps swipe was part of the Chapter 5 tutorial. Zoom, Home, Search, Legend, Expand and Scale Bar were covered in the labs.
 
 ## Files
 ```
